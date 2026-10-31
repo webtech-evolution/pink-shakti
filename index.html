@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logo.ico" />
+    <title>Pink Shakti | Grow Your Skill, Business &amp; Network</title>
+    <meta
+      name="description"
+      content="Join Pink Shakti, India's women ecosystem. Build skills, find community, showcase your work, meet clients and prepare to sell on Sakhi Bazaar."
+    />
+    <meta name="author" content="PINK SHAKTI" />
+    <meta property="og:title" content="Pink Shakti | Grow Your Skill, Business &amp; Network" />
+    <meta
+      property="og:description"
+      content="Join Pink Shakti, India's women ecosystem. Build skills, find community, showcase your work, meet clients and prepare to sell on Sakhi Bazaar."
+    />
+    <meta property="og:image" content="https://www.pinkshakti.com/images/og-pink-shakti.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.pinkshakti.com/images/og-pink-shakti.jpg" />
+    <meta name="twitter:site" content="@PinkShakti" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600;700&family=Great+Vibes&display=swap"
+    />
+    <!-- Meta Pixel -->
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+      fbq("init", "1362267232645793");
+    </script>
+    <!-- Google Analytics 4: replace this value after creating the GA4 web stream. -->
+    <script>
+      (function () {
+        var measurementId = "G-XXXXXXXXXX";
+        if (measurementId === "G-XXXXXXXXXX") return;
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag("js", new Date());
+        window.gtag("config", measurementId, { send_page_view: false });
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=" + measurementId;
+        document.head.appendChild(script);
+      })();
+    </script>
+
+    <!-- Pink Shakti SPA page + event tracking -->
+    <script>
+      (function () {
+        var last = "";
+        function track(metaEvent, gaEvent, params) {
+          try {
+            if (window.fbq) fbq("track", metaEvent, params || {});
+          } catch (e) {}
+          try {
+            if (window.gtag) gtag("event", gaEvent, params || {});
+          } catch (e) {}
+        }
+        function onRoute() {
+          var path = location.pathname;
+          if (path === last) return;
+          last = path;
+          try {
+            fbq("track", "PageView");
+          } catch (e) {}
+          try {
+            gtag("event", "page_view", {
+              page_path: path,
+              page_location: location.href,
+              page_title: document.title,
+            });
+          } catch (e) {}
+          if (path.indexOf("/membership") === 0) {
+            track("ViewContent", "view_packages", {
+              content_name: "Pink Saathi packages",
+              content_category: "membership",
+            });
+          }
+        }
+
+        ["pushState", "replaceState"].forEach(function (method) {
+          var original = history[method];
+          history[method] = function () {
+            var result = original.apply(this, arguments);
+            setTimeout(onRoute, 50);
+            return result;
+          };
+        });
+        window.addEventListener("popstate", function () {
+          setTimeout(onRoute, 50);
+        });
+        document.addEventListener("DOMContentLoaded", onRoute);
+        if (document.readyState !== "loading") onRoute();
+
+        document.addEventListener(
+          "click",
+          function (event) {
+            var element = event.target.closest("a,button");
+            if (!element) return;
+            var text = (element.innerText || "").trim().toUpperCase();
+            var href = element.getAttribute("href") || "";
+            if (/JOIN (FREE|MOVEMENT|ECOSYSTEM|THE MOVEMENT)/.test(text)) {
+              track("Lead", "join_click", { content_name: text, page: location.pathname });
+            } else if (href.indexOf("mailto:") === 0 || href.indexOf("instagram.com") > -1) {
+              track("Contact", "contact_click", {
+                method: href.indexOf("mailto:") === 0 ? "email" : "instagram",
+              });
+            } else if (text === "SUBSCRIBE") {
+              track("Subscribe", "newsletter", { page: location.pathname });
+            }
+          },
+          true,
+        );
+
+        window.psTrackSignup = function (plan) {
+          track("CompleteRegistration", "sign_up", {
+            content_name: plan || "aarambh",
+            method: "website",
+          });
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1362267232645793&ev=PageView&noscript=1"
+    /></noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

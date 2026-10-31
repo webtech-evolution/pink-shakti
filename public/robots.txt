@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /merchant/
+Disallow: /profile
+Disallow: /login
+
+Sitemap: https://www.pinkshakti.com/sitemap.xml

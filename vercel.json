@@ -1,0 +1,31 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/about", "destination": "/about/index.html" },
+    { "source": "/how-it-works", "destination": "/how-it-works/index.html" },
+    { "source": "/pillars", "destination": "/pillars/index.html" },
+    { "source": "/events", "destination": "/events/index.html" },
+    { "source": "/events/:slug", "destination": "/events/:slug/index.html" },
+    { "source": "/showcase", "destination": "/showcase/index.html" },
+    { "source": "/circles", "destination": "/circles/index.html" },
+    { "source": "/stories", "destination": "/stories/index.html" },
+    { "source": "/faq", "destination": "/faq/index.html" },
+    { "source": "/awards", "destination": "/awards/index.html" },
+    { "source": "/membership", "destination": "/membership/index.html" },
+    { "source": "/sakhi-bazaar", "destination": "/sakhi-bazaar/index.html" },
+    { "source": "/sell", "destination": "/sell/index.html" },
+    { "source": "/media", "destination": "/media/index.html" },
+    { "source": "/partners", "destination": "/partners/index.html" },
+    { "source": "/partner", "destination": "/partner/index.html" },
+    { "source": "/contact", "destination": "/contact/index.html" },
+    { "source": "/csr", "destination": "/csr/index.html" },
+    { "source": "/privacy", "destination": "/privacy/index.html" },
+    { "source": "/terms", "destination": "/terms/index.html" },
+    { "source": "/join", "destination": "/join/index.html" },
+    { "source": "/resources", "destination": "/resources/index.html" },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
