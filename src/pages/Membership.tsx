@@ -1,12 +1,17 @@
 import { Check, Minus, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { api, inr, tokens, type Plan } from "@/lib/api";
+import { buyPlan } from "@/lib/pay";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
 import { PageExtras } from "@/components/PageExtras";
 import { EnquiryForm, cityOptions, iAmOptions } from "@/components/EnquiryForm";
 
 // Static plan data until the new admin manages plans.
-const plans = [
+// Shown if the server is unreachable; live prices come from the admin "Plans" tab.
+const fallbackPlans = [
   {
     name: "Aarambh",
     meaning: "The beginning",
@@ -83,7 +88,52 @@ const table: [string, ...boolean[]][] = [
   ["Featured profile + dedicated reel", false, false, false, true],
 ];
 
+const tags: Record<string, string> = { aarambh: "Start here", pragati: "For growing businesses" };
+const toCard = (p: Plan) => ({
+  key: p.key,
+  name: p.name,
+  meaning: p.meaning,
+  price: p.price ? inr(p.price) : "Free",
+  per: p.price ? "per year" : "for life",
+  tag: tags[p.key],
+  features: p.features,
+});
+
 export default function MembershipPage() {
+  const navigate = useNavigate();
+  const [plans, setPlans] = useState(
+    fallbackPlans.map((p) => ({ ...p, key: p.name.toLowerCase() })),
+  );
+  const [buying, setBuying] = useState("");
+  useEffect(() => {
+    api<Plan[]>("/plans")
+      .then((ps) => ps.length && setPlans(ps.map(toCard)))
+      .catch(() => {});
+  }, []);
+  const buy = async (key: string) => {
+    if (!tokens.get("user"))
+      return navigate(`/account?next=${encodeURIComponent(`/membership?buy=${key}`)}`);
+    setBuying(key);
+    try {
+      if (await buyPlan(key)) {
+        toast.success("Payment successful! Your membership is active.");
+        navigate("/account");
+      }
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBuying("");
+    }
+  };
+  // Resume a purchase started before logging in.
+  useEffect(() => {
+    const key = new URLSearchParams(window.location.search).get("buy");
+    if (key && tokens.get("user")) {
+      window.history.replaceState(null, "", "/membership");
+      buy(key);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   usePageMeta(
     "Pink Saathi Membership Plans | Join Free | Pink Shakti",
     "Compare Pink Saathi plans: Aarambh is free for life; Udaan, Pragati and Shikhar add skill workshops, stage time, stall discounts, client introductions and selling on Sakhi Bazaar.",
@@ -128,18 +178,19 @@ export default function MembershipPage() {
               </ul>
               {p.price === "Free" ? (
                 <Link
-                  to="/join"
+                  to="/account"
                   className="mt-8 text-center px-6 py-3 bg-maroon text-ivory text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-gold hover:text-maroon transition-all"
                 >
                   Join free
                 </Link>
               ) : (
-                <a
-                  href="#reserve"
-                  className="mt-8 text-center px-6 py-3 border border-maroon/20 text-maroon text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-maroon hover:text-ivory transition-all"
+                <button
+                  onClick={() => buy(p.key)}
+                  disabled={!!buying}
+                  className="mt-8 text-center px-6 py-3 border border-maroon/20 text-maroon text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-maroon hover:text-ivory transition-all disabled:opacity-50"
                 >
-                  Reserve my spot
-                </a>
+                  {buying === p.key ? "Opening payment…" : `Buy ${p.name}`}
+                </button>
               )}
             </article>
           ))}
@@ -197,11 +248,11 @@ export default function MembershipPage() {
         <div className="max-w-3xl mx-auto px-6">
           <span className="page-label mb-4">Founding members</span>
           <h2 id="reserve-heading" className="font-display text-3xl lg:text-4xl text-maroon mb-4">
-            Reserve your spot on a paid plan
+            Prefer to talk to us first?
           </h2>
           <p className="text-maroon/60 leading-relaxed mb-8">
-            Tell us which plan you're interested in. Our team will WhatsApp you within 48 hours with
-            your Founding Member offer.
+            Tell us which plan you're interested in and our team will WhatsApp you within 48 hours
+            to help you choose.
           </p>
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gold/10">
             <EnquiryForm

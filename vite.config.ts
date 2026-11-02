@@ -49,10 +49,24 @@ function sitemapPlugin(routes: string[]): Plugin {
   };
 }
 
+// Runs the Express API (server/app.js) inside the Vite dev server, so `npm run dev` starts everything.
+function apiPlugin(): Plugin {
+  return {
+    name: "pink-shakti-api",
+    apply: "serve",
+    async configureServer(server) {
+      const { app, runReminders } = await import("./server/app.js");
+      runReminders();
+      setInterval(runReminders, 6 * 3600e3);
+      server.middlewares.use(app);
+    },
+  };
+}
+
 export default defineConfig(async ({ mode, command }) => {
   const routes = [...staticRoutes];
 
-  const plugins: PluginOption[] = [react(), tailwindcss(), tsconfigPaths()];
+  const plugins: PluginOption[] = [react(), tailwindcss(), tsconfigPaths(), apiPlugin()];
   if (command === "build") {
     const rendererOptions: {
       renderAfterTime: number;

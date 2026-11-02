@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserRound } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoAsset from "@/assets/logo.webp";
 
@@ -76,6 +76,13 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <Link
+                to="/account"
+                className="p-2 text-maroon hover:text-gold"
+                aria-label="My account"
+              >
+                <UserRound size={18} />
+              </Link>
               <Link
                 to="/membership"
                 className="hidden md:inline-flex px-4 lg:px-6 py-2.5 bg-maroon text-ivory text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-gold hover:text-maroon transition-all duration-300 whitespace-nowrap"

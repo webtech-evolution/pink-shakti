@@ -19,6 +19,9 @@ import TermsPage from "@/pages/Terms";
 import JoinPage from "@/pages/Join";
 import StoriesPage from "@/pages/Stories";
 import NotFoundPage from "@/pages/NotFound";
+import AccountPage from "@/pages/Account";
+import EventDetailPage from "@/pages/EventDetail";
+import AdminPage from "@/pages/admin/Admin";
 import {
   CirclesPage,
   FAQPage,
@@ -41,6 +44,14 @@ export default function App() {
     document.body.scrollTop = 0;
   }, [pathname]);
 
+  if (pathname.startsWith("/admin"))
+    return (
+      <>
+        <Toaster position="top-center" richColors />
+        <AdminPage />
+      </>
+    );
+
   return (
     <div className="min-h-screen bg-background font-body overflow-x-hidden">
       <Toaster position="top-center" richColors />
@@ -51,6 +62,8 @@ export default function App() {
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/pillars" element={<PillarsPage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:slug" element={<EventDetailPage />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/showcase" element={<ShowcasePage />} />
         <Route path="/circles" element={<CirclesPage />} />
         <Route path="/stories" element={<StoriesPage />} />

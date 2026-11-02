@@ -2,18 +2,8 @@ import { Check } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
 import { PageExtras } from "@/components/PageExtras";
-import { EnquiryForm, cityOptions, iAmOptions } from "@/components/EnquiryForm";
-
-const interestOptions = [
-  "Health & Wellness",
-  "Leadership & Power",
-  "Wealth & Entrepreneurship",
-  "Education & Future",
-  "Rights & Justice",
-  "Society & Culture",
-  "Media & Global Connect",
-  "Awards & Recognition",
-];
+import { useNavigate } from "react-router-dom";
+import { AuthForm } from "@/pages/Account";
 
 const benefits = [
   "Invitations to Pink Shakti summits, city meet-ups and open webinars",
@@ -23,6 +13,7 @@ const benefits = [
 ];
 
 export default function JoinPage() {
+  const navigate = useNavigate();
   usePageMeta(
     "Join Pink Shakti Free | Women's Community in India",
     "Join the free Pink Shakti women's community for events, masterclasses, mentorship and a pan-India sisterhood.",
@@ -51,19 +42,8 @@ export default function JoinPage() {
             </ul>
           </div>
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gold/10">
-            <h2 className="font-display text-2xl text-maroon mb-6">Tell us about you</h2>
-            <EnquiryForm
-              subject="Join Pink Shakti: Aarambh (free)"
-              button="Join free"
-              fields={[
-                { name: "name", label: "Full name", required: true },
-                { name: "mobile", label: "Mobile (WhatsApp)", type: "tel", required: true },
-                { name: "email", label: "Email", type: "email" },
-                { name: "city", label: "City", options: cityOptions, required: true },
-                { name: "iam", label: "I am a", options: iAmOptions, required: true },
-                { name: "interest", label: "Most interested in", options: interestOptions },
-              ]}
-            />
+            <h2 className="font-display text-2xl text-maroon mb-6">Create your free account</h2>
+            <AuthForm onDone={() => navigate("/account")} />
           </div>
         </div>
       </section>
