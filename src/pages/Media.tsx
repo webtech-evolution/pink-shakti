@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { listGallery } from "@/lib/content-api";
-import type { GalleryItem } from "@/lib/types";
 import { photos } from "@/lib/photos";
+import { PageExtras } from "@/components/PageExtras";
 
-const FALLBACK: Pick<GalleryItem, "title" | "image" | "caption">[] = [
+const gallery = [
   {
     title: "Women Leadership Summit",
     image: photos.gallery[0],
@@ -42,18 +41,11 @@ const FALLBACK: Pick<GalleryItem, "title" | "image" | "caption">[] = [
 
 export default function MediaPage() {
   usePageMeta(
-    "Media Gallery | PINK SHAKTI 360°",
+    "Pink Shakti Media Gallery | Summits, Awards & Events Photos",
     "Photos and press moments from PINK SHAKTI 360° summits, awards nights, health drives and community meetups.",
   );
 
-  const [items, setItems] = useState<GalleryItem[]>([]);
   const [active, setActive] = useState<string | null>(null);
-
-  useEffect(() => {
-    listGallery().then(setItems).catch(() => setItems([]));
-  }, []);
-
-  const gallery = items.length ? items : FALLBACK;
 
   return (
     <div className="min-h-screen bg-ivory">
@@ -126,6 +118,7 @@ export default function MediaPage() {
           <img src={active} alt="" className="max-h-[85vh] max-w-full rounded-2xl shadow-2xl" />
         </div>
       )}
+      <PageExtras page="media" />
     </div>
   );
 }

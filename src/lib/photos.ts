@@ -1,5 +1,5 @@
 // Real photographs (Unsplash) — no AI-generated imagery.
-const u = (id: string, w = 900, h = 1100) =>
+export const u = (id: string, w = 900, h = 1100) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
 
 export const photos = {

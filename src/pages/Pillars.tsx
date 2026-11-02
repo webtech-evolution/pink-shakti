@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { usePageMeta } from "@/lib/use-page-meta";
 import { photos } from "@/lib/photos";
+import { PageExtras } from "@/components/PageExtras";
 
 const pillars = [
   {
@@ -391,6 +392,7 @@ export default function PillarsPage() {
           </div>
         </div>
       </section>
+      <PageExtras page="pillars" />
     </main>
   );
 }

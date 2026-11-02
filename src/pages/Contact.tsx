@@ -1,39 +1,14 @@
-import { useState } from "react";
-import { Mail, Instagram, MapPin, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Mail, Instagram, MapPin } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { submitLead } from "@/lib/content-api";
+import { EnquiryForm, cityOptions } from "@/components/EnquiryForm";
+import { PageExtras } from "@/components/PageExtras";
 
 export default function ContactPage() {
   usePageMeta(
-    "Contact Pink Shakti | Get in Touch",
-    "Contact the Pink Shakti team about joining, events, partnerships or general enquiries.",
+    "Contact Pink Shakti | Join, Sell, Sponsor or Partner",
+    "Talk to the Pink Shakti team in Ahmedabad about membership, selling on Sakhi Bazaar, booking a stall, speaking at events, sponsorship, CSR or media.",
   );
-
-  const [sending, setSending] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
-
-  const field =
-    "w-full px-4 py-3 rounded-xl border border-maroon/15 bg-white text-sm text-maroon placeholder:text-maroon/35 focus:outline-none focus:border-gold";
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.email || !form.message) {
-      toast.error("Please add your email and a message.");
-      return;
-    }
-    setSending(true);
-    try {
-      await submitLead({ type: "contact", ...form });
-      toast.success("Message received. We'll get back to you soon.");
-      setForm({ name: "", email: "", phone: "", message: "" });
-    } catch {
-      toast.error("Could not send right now. Please email hello@pinkshakti.com.");
-    } finally {
-      setSending(false);
-    }
-  };
 
   return (
     <main>
@@ -81,50 +56,36 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-3xl mx-auto bg-white rounded-3xl p-5 sm:p-8 border border-gold/10 space-y-4"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                className={`${field} min-w-0`}
-                placeholder="Your name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <input
-                className={`${field} min-w-0`}
-                type="tel"
-                autoComplete="tel"
-                placeholder="Phone number"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
-            </div>
-            <input
-              className={`${field} min-w-0`}
-              type="email"
-              placeholder="Email *"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+          <div className="w-full max-w-3xl mx-auto bg-white rounded-3xl p-5 sm:p-8 border border-gold/10">
+            <EnquiryForm
+              subject="Pink Shakti website enquiry"
+              button="Send message"
+              fields={[
+                { name: "name", label: "Name", required: true },
+                { name: "mobile", label: "Mobile (WhatsApp)", type: "tel", required: true },
+                { name: "email", label: "Email", type: "email" },
+                { name: "city", label: "City", options: cityOptions },
+                {
+                  name: "want",
+                  label: "I want to",
+                  options: [
+                    "Join",
+                    "Sell on Sakhi Bazaar",
+                    "Book a stall",
+                    "Sponsor or CSR",
+                    "Speak at an event",
+                    "Media",
+                    "Other",
+                  ],
+                  required: true,
+                },
+                { name: "message", label: "Message", type: "textarea", required: true },
+              ]}
             />
-            <textarea
-              className={`${field} min-w-0 min-h-40`}
-              placeholder="How can we help? *"
-              value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
-            />
-            <button
-              type="submit"
-              disabled={sending}
-              className="w-full px-8 py-4 bg-maroon text-ivory text-[11px] font-bold uppercase tracking-[0.25em] rounded-full hover:bg-gold hover:text-maroon transition-all disabled:opacity-60 flex items-center justify-center gap-2"
-            >
-              {sending && <Loader2 className="size-4 animate-spin" />}
-              Send Message
-            </button>
-          </form>
+          </div>
         </div>
       </section>
+      <PageExtras page="contact" />
     </main>
   );
 }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { HeartHandshake, Stethoscope, GraduationCap, Scale, ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
+import { PageExtras } from "@/components/PageExtras";
 
 const programmes = [
   {
@@ -29,7 +30,7 @@ const programmes = [
 
 export default function CSRPage() {
   usePageMeta(
-    "CSR & Social Impact | PINK SHAKTI",
+    "Women Empowerment CSR Programmes | Pink Shakti",
     "Fund measurable women-focused CSR programmes with PINK SHAKTI 360° — health, skilling, safety and entrepreneurship.",
   );
 
@@ -70,8 +71,8 @@ export default function CSRPage() {
             Every rupee is tied to a woman's outcome
           </h2>
           <p className="text-ivory/65 leading-relaxed mb-8">
-            We share programme design, beneficiary counts, media coverage and impact documentation for
-            every collaboration — so your board sees exactly what changed.
+            We share programme design, beneficiary counts, media coverage and impact documentation
+            for every collaboration — so your board sees exactly what changed.
           </p>
           <Link
             to="/partners"
@@ -81,6 +82,7 @@ export default function CSRPage() {
           </Link>
         </div>
       </section>
+      <PageExtras page="csr" />
     </main>
   );
 }

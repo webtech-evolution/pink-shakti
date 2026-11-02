@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Award, Check, Loader2, Sparkles, Trophy } from "lucide-react";
-import { toast } from "sonner";
+import { Award, Sparkles, Trophy } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { submitNomination } from "@/lib/content-api";
+import { EnquiryForm, cityOptions } from "@/components/EnquiryForm";
+import { PageExtras } from "@/components/PageExtras";
 
 const categories = [
   "Woman Entrepreneur of the Year",
@@ -44,49 +43,9 @@ const journey = [
 
 export default function AwardsPage() {
   usePageMeta(
-    "Awards Nomination | PINK SHAKTI",
+    "PINK SHAKTI Awards | Nominate Inspiring Women Achievers",
     "Nominate extraordinary women for the PINK SHAKTI 360° Awards. Celebrating excellence in leadership, wellness, wealth, rights, culture and social impact.",
   );
-
-  const [sending, setSending] = useState(false);
-  const [done, setDone] = useState(false);
-  const [form, setForm] = useState({
-    category: categories[0],
-    nomineeName: "",
-    nomineeEmail: "",
-    nomineePhone: "",
-    city: "",
-    linkedin: "",
-    achievements: "",
-    nominatedBy: "",
-    nominatorEmail: "",
-  });
-
-  const field =
-    "w-full px-4 py-3 rounded-xl border border-maroon/15 bg-white text-sm text-maroon placeholder:text-maroon/35 focus:outline-none focus:border-gold";
-
-  const set =
-    (k: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-      setForm((f) => ({ ...f, [k]: e.target.value }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.nomineeName || !form.achievements || !form.nominatedBy || !form.nominatorEmail) {
-      toast.error("Nominee name, achievements and your contact details are required.");
-      return;
-    }
-    setSending(true);
-    try {
-      await submitNomination(form);
-      setDone(true);
-      toast.success("Nomination submitted. Our jury team will be in touch.");
-    } catch (err: any) {
-      toast.error(err?.message || "Could not submit the nomination. Please try again.");
-    } finally {
-      setSending(false);
-    }
-  };
 
   return (
     <main>
@@ -150,105 +109,33 @@ export default function AwardsPage() {
           </div>
 
           <div className="bg-ivory rounded-3xl p-8 lg:p-10 border border-gold/10">
-            {done ? (
-              <div className="text-center py-10">
-                <div className="size-14 rounded-full bg-gold/15 flex items-center justify-center mx-auto mb-5">
-                  <Check className="size-6 text-gold" />
-                </div>
-                <h3 className="font-display text-2xl text-maroon mb-3">Nomination received</h3>
-                <p className="text-maroon/55 text-sm leading-relaxed max-w-sm mx-auto">
-                  Thank you for putting excellence forward. Our jury team reviews every entry and
-                  will reach out if additional information is needed.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Award className="size-5 text-gold" />
-                  <h3 className="font-display text-2xl text-maroon">Submit a nomination</h3>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] uppercase tracking-widest text-maroon/45 mb-2">
-                    Category
-                  </label>
-                  <select value={form.category} onChange={set("category")} className={field}>
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <input
-                  className={field}
-                  placeholder="Nominee full name *"
-                  value={form.nomineeName}
-                  onChange={set("nomineeName")}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input
-                    className={field}
-                    placeholder="Nominee email"
-                    value={form.nomineeEmail}
-                    onChange={set("nomineeEmail")}
-                  />
-                  <input
-                    className={field}
-                    placeholder="Nominee phone"
-                    value={form.nomineePhone}
-                    onChange={set("nomineePhone")}
-                  />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input
-                    className={field}
-                    placeholder="City"
-                    value={form.city}
-                    onChange={set("city")}
-                  />
-                  <input
-                    className={field}
-                    placeholder="LinkedIn / portfolio link"
-                    value={form.linkedin}
-                    onChange={set("linkedin")}
-                  />
-                </div>
-                <textarea
-                  className={`${field} min-h-32`}
-                  placeholder="Key achievements and impact *"
-                  value={form.achievements}
-                  onChange={set("achievements")}
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input
-                    className={field}
-                    placeholder="Your name *"
-                    value={form.nominatedBy}
-                    onChange={set("nominatedBy")}
-                  />
-                  <input
-                    className={field}
-                    placeholder="Your email *"
-                    value={form.nominatorEmail}
-                    onChange={set("nominatorEmail")}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={true}
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-maroon text-ivory rounded-full text-[11px] font-bold uppercase tracking-[0.25em] hover:bg-gold hover:text-maroon transition-colors disabled:opacity-60"
-                >
-                  {sending && <Loader2 size={14} className="animate-spin" />}
-                  {sending ? "Submitting" : "Coming Soon..."}
-                </button>
-              </form>
-            )}
+            <div className="flex items-center gap-3 mb-6">
+              <Award className="size-5 text-gold" />
+              <h3 className="font-display text-2xl text-maroon">Submit a nomination</h3>
+            </div>
+            <EnquiryForm
+              subject="PINK SHAKTI Awards nomination"
+              button="Submit nomination"
+              fields={[
+                { name: "category", label: "Award category", options: categories, required: true },
+                { name: "nominee", label: "Nominee name", required: true },
+                { name: "nomineePhone", label: "Nominee mobile", type: "tel" },
+                { name: "city", label: "City", options: cityOptions },
+                { name: "link", label: "LinkedIn / Instagram / website" },
+                { name: "by", label: "Your name", required: true },
+                { name: "byContact", label: "Your mobile or email", required: true },
+                {
+                  name: "achievements",
+                  label: "Her achievements and impact",
+                  type: "textarea",
+                  required: true,
+                },
+              ]}
+            />
           </div>
         </div>
       </section>
+      <PageExtras page="awards" />
     </main>
   );
 }

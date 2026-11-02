@@ -12,6 +12,9 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { usePageMeta } from "@/lib/use-page-meta";
+import { AboutStorySection, aboutFaqs } from "@/components/sections/AboutStorySection";
+import { FaqBlock } from "@/components/FaqBlock";
+import { PageExtras } from "@/components/PageExtras";
 
 const values = [
   { icon: Heart, title: "Respect", desc: "Every woman deserves dignity, equality and respect." },
@@ -87,8 +90,8 @@ const milestones = [
 
 export default function AboutPage() {
   usePageMeta(
-    "About Pink Shakti | A Women-First Community",
-    "Meet Pink Shakti, a women-first community connecting learning, health, leadership, entrepreneurship and opportunity across eight pillars.",
+    "About Pink Shakti | Founder, Mission & Women Empowerment Vision",
+    "Pink Shakti is India's 360° women's ecosystem, founded by Manish Patel under ZCAD Group, Ahmedabad. Discover our mission, eight pillars, journey and the women we serve.",
   );
 
   return (
@@ -200,6 +203,9 @@ export default function AboutPage() {
       </section>
 
       {/* VALUES */}
+      <PageExtras page="about" />
+      <AboutStorySection />
+
       <section className="py-16 lg:py-24 bg-ivory">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <motion.div
@@ -297,6 +303,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <FaqBlock id="about-faq" faqs={aboutFaqs} bg="bg-ivory" />
 
       {/* CTA */}
       <section className="py-16 lg:py-24 bg-maroon relative overflow-hidden">
