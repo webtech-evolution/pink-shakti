@@ -2,6 +2,10 @@ import { ArrowRight, Check, CircleHelp, Lightbulb, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta, useStructuredData } from "@/lib/use-page-meta";
+import { PageExtras } from "@/components/PageExtras";
+import { pageContent } from "@/lib/page-content";
+import { homeFaqs } from "@/components/sections/HomeGuideSection";
+import { aboutFaqs } from "@/components/sections/AboutStorySection";
 
 const steps = [
   {
@@ -82,6 +86,7 @@ export function HowItWorksPage() {
           </p>
         </div>
       </section>
+      <PageExtras page="howItWorks" />
     </main>
   );
 }
@@ -171,6 +176,7 @@ export function SellPage() {
           </p>
         </div>
       </section>
+      <PageExtras page="sell" />
     </main>
   );
 }
@@ -246,6 +252,7 @@ export function ShowcasePage() {
           </div>
         </div>
       </section>
+      <PageExtras page="showcase" />
     </main>
   );
 }
@@ -327,6 +334,7 @@ export function CirclesPage() {
           </Link>
         </div>
       </section>
+      <PageExtras page="circles" />
     </main>
   );
 }
@@ -378,6 +386,27 @@ const faqItems = [
   },
 ];
 
+const faqGroups: [string, { q: string; a: string }[]][] = [
+  [
+    "About Pink Shakti",
+    [
+      ...homeFaqs,
+      ...aboutFaqs,
+      ...faqItems.map(({ question, answer }) => ({ q: question, a: answer })),
+    ].filter((f, i, all) => all.findIndex((x) => x.q === f.q) === i),
+  ],
+  ["Membership", [...pageContent.membership.faqs, ...pageContent.join.faqs]],
+  ["Events & showcasing", [...pageContent.events.faqs, ...pageContent.showcase.faqs]],
+  [
+    "Sakhi Bazaar",
+    [...pageContent.sakhiBazaar.faqs, ...pageContent.sell.faqs].filter(
+      (f, i, all) => all.findIndex((x) => x.q === f.q) === i,
+    ),
+  ],
+  ["Partnerships & CSR", [...pageContent.partners.faqs, ...pageContent.csr.faqs]],
+  ["Awards & stories", [...pageContent.awards.faqs, ...pageContent.stories.faqs]],
+];
+
 export function FAQPage() {
   usePageMeta(
     "Pink Shakti FAQ | Membership, Events & Sakhi Bazaar",
@@ -386,11 +415,13 @@ export function FAQPage() {
   useStructuredData("faq-page", {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqItems.map(({ question, answer }) => ({
-      "@type": "Question",
-      name: question,
-      acceptedAnswer: { "@type": "Answer", text: answer },
-    })),
+    mainEntity: faqGroups
+      .flatMap(([, items]) => items)
+      .map(({ q, a }) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
   });
 
   return (
@@ -406,13 +437,18 @@ export function FAQPage() {
       />
       <section className="bg-ivory py-16 sm:py-20">
         <div className="mx-auto max-w-4xl divide-y divide-maroon/10 px-6">
-          {faqItems.map((item) => (
-            <article key={item.question} className="py-6 first:pt-0 last:pb-0">
-              <h2 className="flex items-start gap-3 font-display text-xl text-maroon">
-                <CircleHelp className="mt-1 size-5 shrink-0 text-gold" /> {item.question}
-              </h2>
-              <p className="mt-3 pl-8 text-sm leading-relaxed text-maroon/65">{item.answer}</p>
-            </article>
+          {faqGroups.map(([group, items]) => (
+            <div key={group} className="py-10">
+              <h2 className="font-display text-3xl text-maroon mb-2">{group}</h2>
+              {items.map((item) => (
+                <article key={item.q} className="py-5">
+                  <h3 className="flex items-start gap-3 font-display text-xl text-maroon">
+                    <CircleHelp className="mt-1 size-5 shrink-0 text-gold" /> {item.q}
+                  </h3>
+                  <p className="mt-3 pl-8 text-sm leading-relaxed text-maroon/65">{item.a}</p>
+                </article>
+              ))}
+            </div>
           ))}
           <p className="pt-8 text-xs text-maroon/45">
             Membership, seller and event terms can change. Refer to the relevant page or agreement
@@ -486,6 +522,7 @@ export function PartnerPage() {
           </p>
         </div>
       </section>
+      <PageExtras page="partner" />
     </main>
   );
 }
@@ -607,6 +644,7 @@ export function ResourcesPage() {
           </p>
         </div>
       </section>
+      <PageExtras page="resources" />
     </main>
   );
 }

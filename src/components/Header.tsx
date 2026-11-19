@@ -3,7 +3,6 @@ import { NavLink, Link } from "react-router-dom";
 import { Menu, X, UserRound } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoAsset from "@/assets/logo.webp";
-import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Home", to: "/" },
@@ -18,7 +17,6 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
@@ -79,9 +77,9 @@ export function Header() {
 
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <Link
-                to={user ? "/profile" : "/login"}
+                to="/account"
                 className="p-2 text-maroon hover:text-gold"
-                aria-label={user ? "Open profile" : "Sign in"}
+                aria-label="My account"
               >
                 <UserRound size={18} />
               </Link>

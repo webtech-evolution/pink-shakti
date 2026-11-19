@@ -1,83 +1,53 @@
-import { useEffect, useState } from "react";
-import { Quote } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { listTestimonials } from "@/lib/content-api";
-import type { Testimonial } from "@/lib/types";
+import { PageExtras } from "@/components/PageExtras";
+import { EnquiryForm, cityOptions } from "@/components/EnquiryForm";
 
 export default function StoriesPage() {
-  const [stories, setStories] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-
   usePageMeta(
-    "Success Stories | Women of Pink Shakti",
-    "Read stories from women in the Pink Shakti community about their work, learning and growth.",
+    "Women Success Stories | Pink Shakti Community",
+    "Real stories of women entrepreneurs and professionals who learned, showcased their work and grew with Pink Shakti. Read them, get inspired and share your own.",
   );
-
-  useEffect(() => {
-    listTestimonials(true)
-      .then(setStories)
-      .finally(() => setLoading(false));
-  }, []);
-
   return (
     <main>
       <PageHero
-        eyebrow="Member voices"
+        eyebrow="Voices of Pink Shakti"
         title={
           <>
-            Women who rise <span className="italic text-gold">together</span>
+            Women who <span className="italic text-gold">rose</span> with Pink Shakti
           </>
         }
-        subtitle="Stories belong to the women who lived them. We share member experiences here with their permission."
+        subtitle="A first sale. A first stage. A first client. These are the moments our community is built on."
       />
-      <section className="bg-ivory py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          {loading ? (
-            <p className="py-16 text-center text-sm text-maroon/50">Loading stories...</p>
-          ) : stories.length ? (
-            <div className="grid gap-8 md:grid-cols-2">
-              {stories.map((story) => (
-                <article
-                  key={story.$id}
-                  className="border-t-2 border-gold/40 bg-white px-6 py-7 sm:px-8"
-                >
-                  <Quote className="mb-4 size-6 text-gold" />
-                  <blockquote className="font-display text-xl leading-relaxed text-maroon/80">
-                    “{story.quote}”
-                  </blockquote>
-                  <div className="mt-7 flex items-center gap-4">
-                    {story.image && (
-                      <img
-                        src={story.image}
-                        alt={story.name}
-                        className="size-12 rounded-full object-cover"
-                        loading="lazy"
-                      />
-                    )}
-                    <div>
-                      <p className="font-semibold text-maroon">{story.name}</p>
-                      {story.role && (
-                        <p className="mt-1 text-[10px] uppercase tracking-widest text-maroon/50">
-                          {story.role}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="mx-auto max-w-2xl border-t border-gold/30 py-12 text-center">
-              <h2 className="font-display text-2xl text-maroon">
-                Member stories are being gathered
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-maroon/60">
-                We will share first-hand experiences here as members choose to contribute and
-                approve their stories for publication.
-              </p>
-            </div>
-          )}
+      <PageExtras page="stories" />
+      <section className="py-16 lg:py-20 bg-ivory" aria-labelledby="story-form">
+        <div className="max-w-3xl mx-auto px-6">
+          <span className="page-label mb-4">Share your story</span>
+          <h2 id="story-form" className="font-display text-3xl lg:text-4xl text-maroon mb-4">
+            Has Pink Shakti been part of your journey?
+          </h2>
+          <p className="text-maroon/60 leading-relaxed mb-8">
+            Tell us in a few lines. We publish stories only with your written consent, and we'll
+            call you before featuring you.
+          </p>
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gold/10">
+            <EnquiryForm
+              subject="My Pink Shakti story"
+              button="Send my story"
+              fields={[
+                { name: "name", label: "Name", required: true },
+                { name: "mobile", label: "Mobile (WhatsApp)", type: "tel", required: true },
+                { name: "city", label: "City", options: cityOptions },
+                { name: "business", label: "What you do", required: true },
+                {
+                  name: "story",
+                  label: "What changed for you, and one result you're proud of",
+                  type: "textarea",
+                  required: true,
+                },
+              ]}
+            />
+          </div>
         </div>
       </section>
     </main>

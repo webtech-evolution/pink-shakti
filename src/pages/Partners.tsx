@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Handshake, Megaphone, Trophy, Users, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Handshake, Megaphone, Trophy, Users } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { listPartners, submitLead } from "@/lib/content-api";
-import type { Partner } from "@/lib/types";
+import { EnquiryForm } from "@/components/EnquiryForm";
+import { PageExtras } from "@/components/PageExtras";
 
 const fallbackPartners = [
   "Femina",
@@ -43,48 +41,11 @@ const opportunities = [
 
 export default function PartnersPage() {
   usePageMeta(
-    "Partner With Us | PINK SHAKTI",
+    "Partner with Pink Shakti | Sponsorship, Media & CSR",
     "Partner with PINK SHAKTI 360° — sponsorship, media, CSR and ecosystem collaborations that empower women across India.",
   );
 
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [sending, setSending] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    organisation: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
-
-  useEffect(() => {
-    listPartners(true)
-      .then(setPartners)
-      .catch(() => setPartners([]));
-  }, []);
-
-  const names = partners.length ? partners.map((p) => p.name) : fallbackPartners;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name || !form.email) {
-      toast.error("Please share your name and email.");
-      return;
-    }
-    setSending(true);
-    try {
-      await submitLead({ type: "partner", ...form });
-      toast.success("Thank you! Our partnerships team will reach out shortly.");
-      setForm({ name: "", organisation: "", email: "", phone: "", message: "" });
-    } catch {
-      toast.error("Could not send right now. Please email us at hello@pinkshakti.com.");
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const field =
-    "w-full px-4 py-3 rounded-xl border border-maroon/15 bg-white text-sm text-maroon placeholder:text-maroon/35 focus:outline-none focus:border-gold";
+  const names = fallbackPartners;
 
   return (
     <main>
@@ -147,54 +108,33 @@ export default function PartnersPage() {
               Let's build something meaningful
             </h2>
           </div>
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-3xl p-8 border border-gold/10 space-y-4"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                className={field}
-                placeholder="Your name *"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <input
-                className={field}
-                placeholder="Organisation"
-                value={form.organisation}
-                onChange={(e) => setForm({ ...form, organisation: e.target.value })}
-              />
-              <input
-                className={field}
-                type="email"
-                placeholder="Email *"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-              <input
-                className={field}
-                placeholder="Phone"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
-            </div>
-            <textarea
-              className={`${field} min-h-32`}
-              placeholder="Tell us how you'd like to partner"
-              value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
+          <div className="max-w-3xl mx-auto bg-white rounded-3xl p-5 sm:p-8 border border-gold/10">
+            <EnquiryForm
+              subject="Pink Shakti partnership enquiry"
+              button="Start the conversation"
+              fields={[
+                { name: "name", label: "Your name", required: true },
+                { name: "org", label: "Organisation", required: true },
+                { name: "email", label: "Email", type: "email", required: true },
+                { name: "phone", label: "Phone", type: "tel" },
+                {
+                  name: "interest",
+                  label: "Interested in",
+                  options: [
+                    "Title / presenting sponsor",
+                    "Media partner",
+                    "Knowledge / CSR partner",
+                    "Ecosystem / retail partner",
+                    "Other",
+                  ],
+                },
+                { name: "message", label: "Message", type: "textarea" },
+              ]}
             />
-            <button
-              type="submit"
-              disabled={sending}
-              className="w-full px-8 py-4 bg-maroon text-ivory text-[11px] font-bold uppercase tracking-[0.25em] rounded-full hover:bg-gold hover:text-maroon transition-all disabled:opacity-60 flex items-center justify-center gap-2"
-            >
-              {sending && <Loader2 className="size-4 animate-spin" />}
-              Send Enquiry
-            </button>
-          </form>
+          </div>
         </div>
       </section>
+      <PageExtras page="partners" />
     </main>
   );
 }

@@ -1,116 +1,129 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { MapPin, ArrowRight } from "lucide-react";
+import { CalendarHeart, MapPin, ArrowRight } from "lucide-react";
+import { api, type EventItem } from "@/lib/api";
+import { PageHero } from "@/components/PageHero";
 import { usePageMeta } from "@/lib/use-page-meta";
-import { listEvents } from "@/lib/events-api";
-import { isAppwriteConfigured } from "@/lib/appwrite";
-import type { EventDoc } from "@/lib/types";
+import { PageExtras } from "@/components/PageExtras";
+import { EnquiryForm, cityOptions } from "@/components/EnquiryForm";
 
 export default function EventsPage() {
   usePageMeta(
-    "Pink Shakti Events | Summits, Meet-ups & Workshops",
+    "Women's Events in Ahmedabad & Gujarat | Pink Shakti Summits & Meet-ups",
     "Join Pink Shakti for women's summits, city meet-ups and workshops. Learn, connect and find opportunities to showcase your work.",
   );
-  const [events, setEvents] = useState<EventDoc[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
-
+  const [events, setEvents] = useState<EventItem[] | null>(null);
   useEffect(() => {
-    if (!isAppwriteConfigured) {
-      setErr("Events backend is not connected yet.");
-      setLoading(false);
-      return;
-    }
-    listEvents({ publishedOnly: true })
+    api<EventItem[]>("/events")
       .then(setEvents)
-      .catch((e) => setErr(e.message))
-      .finally(() => setLoading(false));
+      .catch(() => setEvents([]));
   }, []);
-
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = (events ?? []).filter((e) => e.date >= today);
   return (
-    <div className="min-h-screen pt-16 pb-24 bg-ivory">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold mb-3 block">
-            Learn, Connect and Be Seen
-          </span>
-          <h1 className="font-display text-5xl lg:text-6xl text-maroon mb-4">
-            Events Where Women Get Seen
-          </h1>
-          <p className="text-maroon/60 leading-relaxed">
-            Join us for summits, city meet-ups, workshops and awareness drives. Come to learn,
-            connect with the community or showcase your business.
-          </p>
+    <main>
+      <PageHero
+        eyebrow="Summits · Meet-ups · Workshops"
+        title={
+          <>
+            Events where women <span className="italic text-gold">get seen</span>
+          </>
+        }
+        subtitle="Summits, city meet-ups, workshops and awareness drives. Come to learn, to connect, or to showcase your business on stage and at a stall."
+      />
+      {upcoming.length > 0 && (
+        <section className="py-16 bg-white" aria-labelledby="upcoming">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <span className="page-label mb-4">Upcoming events</span>
+            <h2 id="upcoming" className="font-display text-3xl lg:text-5xl text-maroon mb-10">
+              Save your seat
+            </h2>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {upcoming.map((e) => (
+                <EventCard key={e.id} e={e} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      <section className="py-16 bg-ivory" aria-labelledby="next-event">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="rounded-3xl bg-white p-6 sm:p-10 border border-gold/10 shadow-sm">
+            <span className="page-label mb-4 inline-flex items-center gap-2">
+              <CalendarHeart size={14} /> Coming up next
+            </span>
+            <h2 id="next-event" className="font-display text-3xl lg:text-4xl text-maroon mb-3">
+              {upcoming.length
+                ? "Want to attend, exhibit or speak?"
+                : "Our next Gujarat meet-up is being planned"}
+            </h2>
+            <p className="text-maroon/60 leading-relaxed mb-8">
+              Tell us you're interested and you'll get the first invite, along with early access to
+              stalls and stage pitch slots.
+            </p>
+            <EnquiryForm
+              subject="Event interest: Pink Shakti"
+              button="Register interest"
+              fields={[
+                { name: "name", label: "Name", required: true },
+                { name: "mobile", label: "Mobile (WhatsApp)", type: "tel", required: true },
+                { name: "city", label: "City", options: cityOptions, required: true },
+                {
+                  name: "want",
+                  label: "I want to",
+                  options: ["Attend", "Book a stall", "Pitch on stage", "Speak"],
+                  required: true,
+                },
+              ]}
+            />
+          </div>
         </div>
+      </section>
+      <PageExtras page="events" />
+    </main>
+  );
+}
 
-        {loading && <p className="text-center text-maroon/40">Loading events…</p>}
-        {err && (
-          <div className="max-w-xl mx-auto text-center text-maroon/60 border border-maroon/10 rounded-xl p-6 bg-white">
-            {err}
-          </div>
+export function EventCard({ e }: { e: EventItem }) {
+  const d = new Date(e.date);
+  return (
+    <Link
+      to={`/events/${e.slug}`}
+      className="group flex flex-col overflow-hidden rounded-3xl border border-maroon/10 bg-ivory"
+    >
+      <div className="relative aspect-[16/10] overflow-hidden">
+        {e.image && (
+          <img
+            src={e.image}
+            alt={e.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         )}
-        {!loading && !err && events.length === 0 && (
-          <div className="text-center text-maroon/50">
-            Our next event is being planned. Join free to receive the first invite.
+        <div className="absolute left-4 top-4 rounded-xl bg-maroon px-3 py-2 text-center text-ivory">
+          <div className="font-display text-2xl leading-none">{d.getDate()}</div>
+          <div className="text-[10px] uppercase tracking-widest">
+            {d.toLocaleString("en-IN", { month: "short" })}
           </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {events.map((e, i) => (
-            <motion.div
-              key={e.$id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
-              className="group bg-white rounded-2xl overflow-hidden border border-gold/10 shadow-sm hover:shadow-xl transition-all"
-            >
-              <Link to={`/events/${e.slug || e.$id}`} className="block">
-                <div className="relative h-52 overflow-hidden bg-blush/20">
-                  {e.coverImage ? (
-                    <img
-                      src={e.coverImage}
-                      alt={e.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-maroon/20 font-display text-4xl">
-                      Pink Shakti
-                    </div>
-                  )}
-                  <div className="absolute top-4 left-4 bg-maroon text-ivory rounded-lg px-3 py-2 text-center">
-                    <div className="font-display text-xl leading-none">
-                      {new Date(e.startDate).getDate()}
-                    </div>
-                    <div className="text-[9px] uppercase tracking-widest mt-0.5">
-                      {new Date(e.startDate).toLocaleString("en-IN", { month: "short" })}
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  {e.category && (
-                    <span className="text-[10px] uppercase tracking-widest text-gold font-bold">
-                      {e.category}
-                    </span>
-                  )}
-                  <h3 className="font-display text-xl text-maroon mt-1 mb-2 group-hover:text-gold transition-colors">
-                    {e.title}
-                  </h3>
-                  <p className="text-maroon/60 text-sm mb-3 line-clamp-2">{e.description}</p>
-                  <div className="flex items-center gap-2 text-[11px] text-maroon/40 mb-4">
-                    <MapPin size={12} /> {e.location}
-                  </div>
-                  <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-maroon group-hover:text-gold">
-                    View & Register <ArrowRight size={12} />
-                  </span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
         </div>
       </div>
-    </div>
+      <div className="flex flex-1 flex-col p-6">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-gold">
+          {e.category}
+        </span>
+        <h3 className="mt-2 mb-2 font-display text-2xl text-maroon group-hover:text-gold">
+          {e.title}
+        </h3>
+        <p className="mb-4 line-clamp-2 text-sm text-maroon/60">{e.description}</p>
+        <p className="mt-auto flex items-center gap-2 text-xs text-maroon/50">
+          <MapPin size={14} /> {e.city}
+          {e.time && ` · ${e.time}`}
+        </p>
+        <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-maroon">
+          View details{" "}
+          <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+        </span>
+      </div>
+    </Link>
   );
 }

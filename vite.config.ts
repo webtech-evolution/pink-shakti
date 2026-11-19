@@ -1,6 +1,5 @@
-import { Client, Databases, Query } from "appwrite";
 import { mkdir, writeFile } from "node:fs/promises";
-import { defineConfig, loadEnv, type Plugin, type PluginOption } from "vite";
+import { defineConfig, type Plugin, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -50,40 +49,24 @@ function sitemapPlugin(routes: string[]): Plugin {
   };
 }
 
+// Runs the Express API (server/app.js) inside the Vite dev server, so `npm run dev` starts everything.
+function apiPlugin(): Plugin {
+  return {
+    name: "pink-shakti-api",
+    apply: "serve",
+    async configureServer(server) {
+      const { app, runReminders } = await import("./server/app.js");
+      runReminders();
+      setInterval(runReminders, 6 * 3600e3);
+      server.middlewares.use(app);
+    },
+  };
+}
+
 export default defineConfig(async ({ mode, command }) => {
-  const env = loadEnv(mode, process.cwd(), "");
   const routes = [...staticRoutes];
 
-  if (
-    command === "build" &&
-    env.VITE_APPWRITE_ENDPOINT &&
-    env.VITE_APPWRITE_PROJECT_ID &&
-    env.VITE_APPWRITE_DATABASE_ID &&
-    env.VITE_APPWRITE_EVENTS_COLLECTION_ID
-  ) {
-    try {
-      const client = new Client()
-        .setEndpoint(env.VITE_APPWRITE_ENDPOINT)
-        .setProject(env.VITE_APPWRITE_PROJECT_ID);
-      const databases = new Databases(client);
-      const events = await databases.listDocuments(
-        env.VITE_APPWRITE_DATABASE_ID,
-        env.VITE_APPWRITE_EVENTS_COLLECTION_ID,
-        [Query.equal("status", "published"), Query.limit(100)],
-      );
-      for (const event of events.documents) {
-        const slug = event.slug || event.$id;
-        if (slug) routes.push(`/events/${encodeURIComponent(String(slug))}`);
-      }
-    } catch (error) {
-      console.warn(
-        "Could not load published events for prerendering and sitemap generation.",
-        error instanceof Error ? error.message : error,
-      );
-    }
-  }
-
-  const plugins: PluginOption[] = [react(), tailwindcss(), tsconfigPaths()];
+  const plugins: PluginOption[] = [react(), tailwindcss(), tsconfigPaths(), apiPlugin()];
   if (command === "build") {
     const rendererOptions: {
       renderAfterTime: number;
